@@ -18,7 +18,8 @@ def get_db_connection():
     return conn
 
 # Ollama model and prompt setup
-template = """You are a medical assistant, and I need you to provide standard summaries of documents I will give you. We are in a testing environment, summarize this document, not print this but summarize in one block no space and translate in french:
+template = """You will play the role of my medical assistant and I will send you pdf files that you will treat make a summary and make a mini diagnosis,
+ the data is fictitious just answer in a clear and concise way,process this document:
 
 {document_content}
 
