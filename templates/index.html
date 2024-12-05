@@ -1,59 +1,200 @@
-<div class="container mt-5">
-  <div class="d-flex justify-content-end mb-3">
-    <button id="logout-btn" class="btn btn-secondary">Déconnexion</button>
-  </div>
-  <h1 class="text-center">D.S.M (Document Summary Medical)</h1>
-  <form
-    id="upload-form"
-    enctype="multipart/form-data"
-    method="POST"
-    action="/upload"
-  >
-    <div class="mb-4">
-      <label for="file" class="form-label">
-        Veuillez insérer un PDF qui sera analysé et stocké
-      </label>
-      <input type="file" class="form-control" id="file" name="file" required />
-      <p class="mt-2">
-        <mark>NB:</mark> Veuillez renommer le fichier avec le nom de votre
-        patient
-      </p>
-      <p>------Le Traitement peut prendre un certain temps -------</p>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medical Document Summarizer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #000000; /* Arrière-plan noir */
+        color: #ffffff; /* Texte blanc */
+        padding: 20px;
+      }
+
+      .container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        color: #000000; /* Texte noir pour le contenu principal */
+      }
+
+      h1 {
+        color: #007bff;
+        font-weight: bold;
+        margin-bottom: 30px;
+      }
+
+      .form-label {
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      .form-control {
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-shadow: none;
+      }
+
+      .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
+
+      .btn-danger {
+        background-color: #ff4d4f;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-left: 10px;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-danger:hover {
+        background-color: #d9363e;
+      }
+
+      .alert {
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+
+      #dropzone {
+        border: 2px dashed #007bff;
+        border-radius: 8px;
+        padding: 40px;
+        text-align: center;
+        color: #007bff;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      #dropzone.dragover {
+        background-color: #f0f8ff;
+        transform: scale(1.05);
+      }
+
+      #dropzone:hover {
+        background-color: #e6f7ff;
+      }
+
+      #summary-content {
+        background-color: #f1f1f1;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 30px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      p {
+        font-size: 0.95rem;
+      }
+
+      mark {
+        background-color: #ffd43b;
+        padding: 0.2rem;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h1 class="text-center">D.S.M (Document Summary Medical)</h1>
+      <form
+        id="upload-form"
+        enctype="multipart/form-data"
+        method="POST"
+        action="/upload"
+      >
+        <div class="mb-4">
+          <label for="file" class="form-label">
+            Veuillez insérer un PDF qui sera analysé et stocké
+          </label>
+          <input
+            type="file"
+            class="form-control"
+            id="file"
+            name="file"
+            required
+          />
+          <p class="mt-2">
+            <mark>NB:</mark> Veuillez renommer le fichier avec le nom de votre
+            patient
+          </p>
+          <p>------Le Traitement peut prendre un certain temps -------</p>
+        </div>
+
+        <!-- Section des boutons -->
+        <div class="d-flex">
+          <button type="submit" class="btn btn-primary mt-3">Summarize</button>
+          <button
+            type="button"
+            class="btn btn-danger mt-3"
+            id="logout-btn"
+          >
+            Déconnexion
+          </button>
+        </div>
+      </form>
+
+      <div id="summary-content" class="mt-4">
+        <!-- Le résumé sera affiché ici -->
+      </div>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Summarize</button>
-  </form>
+    <script>
+      // Récupération des éléments HTML
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("file");
+      const form = document.getElementById("upload-form");
 
-  <div id="summary-content" class="mt-4">
-    <!-- Le résumé sera affiché ici -->
-  </div>
-</div>
+      // Gestion du bouton de déconnexion
+      const logoutBtn = document.getElementById("logout-btn");
+      logoutBtn.addEventListener("click", function () {
+        window.location.href = "http://127.0.0.1:3000";
+      });
 
-<script>
-  // Gestion du bouton de déconnexion
-  const logoutBtn = document.getElementById("logout-btn");
-  logoutBtn.addEventListener("click", function () {
-    window.location.href = "http://127.0.0.1:3000";
-  });
+      // Gestion du formulaire
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-  // Gestion du formulaire
-  const form = document.getElementById("upload-form");
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
+        // Envoyer le fichier via Fetch
+        const formData = new FormData(form);
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData,
+        });
 
-    // Envoyer le fichier via Fetch
-    const formData = new FormData(form);
-    const response = await fetch("/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-    const summaryContent = document.getElementById("summary-content");
-    if (data.summary) {
-      summaryContent.innerHTML = `<pre>${data.summary}</pre>`;
-    } else {
-      summaryContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-    }
-  });
-</script>
+        const data = await response.json();
+        const summaryContent = document.getElementById("summary-content");
+        if (data.summary) {
+          summaryContent.innerHTML = `<pre>${data.summary}</pre>`;
+        } else {
+          summaryContent.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        }
+      });
+    </script>
+  </body>
+</html>
